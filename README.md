@@ -2,6 +2,8 @@
 
 An unofficial I AM MUSIC-inspired layered typography generator built with Next.js.
 
+please visit https://iammusicfont.app
+
 ## Features
 
 - Live layered text preview
