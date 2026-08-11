@@ -39,7 +39,7 @@ export default function GeneratorGuidePage() {
         <section className="callout"><span>EXPORT TIP</span><strong>Use PNG for social posts and SVG for production layouts.</strong><p>SVG remains sharp when you scale it for a poster, while PNG is quick to upload and share.</p></section>
         <section><h2>Is this an official tool?</h2><p>No. It is an independent, unofficial recreation of a visual style associated with the I AM MUSIC artwork. The tool does not provide official album artwork or claim to identify an original proprietary font.</p></section>
       </article>
-      <footer className="content-footer"><Link href="/">← Back home</Link><Link href="/i-am-music-font">What is this font style? →</Link></footer>
+      <footer className="content-footer"><Link href="/">← Back home</Link><Link href="/make/no-signal">Try a phrase page →</Link></footer>
     </main>
   );
 }

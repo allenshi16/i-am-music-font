@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 type Mode = "dark" | "paper" | "acid";
 
@@ -37,7 +38,17 @@ function Icon({ name }: { name: "arrow" | "download" | "shuffle" }) {
 }
 
 export default function HomePage() {
-  const [text, setText] = useState("I AM MUSIC");
+  return (
+    <Suspense fallback={null}>
+      <HomeContent />
+    </Suspense>
+  );
+}
+
+function HomeContent() {
+  const searchParams = useSearchParams();
+  const initialText = (searchParams.get("text") ?? "").trim().toUpperCase().slice(0, 32) || "I AM MUSIC";
+  const [text, setText] = useState(initialText);
   const [mode, setMode] = useState<Mode>("dark");
   const [size, setSize] = useState(86);
   const [tracking, setTracking] = useState(1);
