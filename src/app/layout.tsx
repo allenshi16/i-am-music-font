@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: "%s | I Am Music Font",
   },
   description:
-    "Create custom I AM MUSIC style text with a free online generator. Tune layered typography, spacing and color, then export your design as a PNG.",
+    "Create I AM MUSIC font-style text with a free online generator. Adjust layered typography, spacing and color, then download PNG or SVG designs with no sign-up.",
   keywords: [
     "i am music font",
     "i am music font generator",

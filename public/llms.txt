@@ -1,0 +1,8 @@
+# I AM MUSIC Font
+
+> Web-based font generator that turns your text into the bold "I AM MUSIC" album-cover typography style. Type any text, preview it instantly, and copy or download the result. Free, no sign-up.
+
+## Main pages
+- [Home](https://iammusicfont.app/): Live text-to-font generator
+- [What is this font style](https://iammusicfont.app/i-am-music-font): Guide to the aesthetic and how to use it
+- [Generator guide](https://iammusicfont.app/i-am-music-font-generator): Step-by-step usage tips
