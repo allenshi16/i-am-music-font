@@ -4,6 +4,9 @@ import "./globals.css";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 // AdSense publisher id (e.g. "ca-pub-1234567890123456"). Empty = ads disabled.
 const adsenseClient = (process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "").trim();
+// GA4 measurement id (e.g. "G-XXXXXXXXXX"). Empty = analytics disabled.
+const gaId = (process.env.NEXT_PUBLIC_GA_ID ?? "").trim();
+const gaValid = /^G-[A-Z0-9]{6,}$/.test(gaId);
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -42,6 +45,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(adsenseClient)}`}
             crossOrigin="anonymous"
           />
+        ) : null}
+        {gaValid ? (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','${gaId}',{anonymize_ip:true});`,
+              }}
+            />
+          </>
         ) : null}
       </head>
       <body>{children}</body>
