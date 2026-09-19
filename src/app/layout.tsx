@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+// AdSense publisher id (e.g. "ca-pub-1234567890123456"). Empty = ads disabled.
+const adsenseClient = (process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? "").trim();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -25,11 +27,23 @@ export const metadata: Metadata = {
     siteName: "I Am Music Font",
   },
   robots: { index: true, follow: true },
+  other: adsenseClient ? { "adsense-client": adsenseClient } : {},
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
+      <head>
+        {/* AdSense: loads only when a real publisher id is configured; otherwise
+            public/ads.js hides every .ad-slot container and loads nothing. */}
+        {adsenseClient ? (
+          <script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(adsenseClient)}`}
+            crossOrigin="anonymous"
+          />
+        ) : null}
+      </head>
       <body>{children}</body>
     </html>
   );

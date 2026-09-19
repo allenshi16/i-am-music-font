@@ -143,7 +143,9 @@ export default async function PhrasePage({ params }: { params: Promise<{ phrase:
       <footer className="content-footer">
         <Link href="/">← Back home</Link>
         <Link href="/i-am-music-font-generator">Read the generator guide →</Link>
+        <Link href="/privacy">Privacy</Link>
       </footer>
+      <div className="ad-slot" aria-hidden="true"></div>
     </main>
   );
 }

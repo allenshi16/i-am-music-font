@@ -17,5 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/i-am-music-font-generator`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     ...phrasePages,
     { url: `${siteUrl}/album-cover-text-style`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${siteUrl}/privacy`, lastModified: new Date("2026-09-18"), changeFrequency: "yearly", priority: 0.3 },
   ];
 }

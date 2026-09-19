@@ -74,6 +74,7 @@ export default function AlbumCoverTextStylePage() {
         <section className="article-faq"><h2>Frequently asked questions</h2><details open><summary>Can I copy and paste album cover style text anywhere?</summary><p>The layered effect needs a graphic or a web page. For bios and captions, use single-style bold text via Unicode fonts, or paste a link to your rendered image.</p></details><details><summary>What fonts look like album cover lettering?</summary><p>A bold condensed sans-serif for the back layer paired with a stretched serif for the front layer recreates the classic look.</p></details><details><summary>Is the generator free?</summary><p>Yes — type your phrase, adjust the controls and download a PNG or SVG without signing up.</p></details></section>
       </article>
       <footer className="content-footer"><Link href="/">← Back home</Link><Link href="/i-am-music-font">What font is used? →</Link></footer>
+      <div className="ad-slot" aria-hidden="true"></div>
     </main>
   );
 }

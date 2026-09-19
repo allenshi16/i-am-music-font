@@ -60,15 +60,52 @@ function Icon({ name }: { name: "arrow" | "download" | "shuffle" }) {
   return <span aria-hidden="true">↗</span>;
 }
 
+// The generator itself needs searchParams (client-only), but the SEO content
+// (hero copy, FAQ, footer, ad container) must be in the static shell — so only
+// the interactive island is wrapped in Suspense with a client-side bail-out.
 export default function HomePage() {
   return (
-    <Suspense fallback={null}>
-      <HomeContent />
-    </Suspense>
+    <main className="site-shell">
+      <div className="grain" aria-hidden="true" />
+      <header className="topbar">
+        <a className="brand" href="#top" aria-label="I Am Music Font home">
+          <span className="brand-mark">IAM</span>
+          <span className="brand-name">I AM MUSIC FONT</span>
+        </a>
+        <nav className="nav-links" aria-label="Primary navigation">
+          <a href="#generator">Generator</a>
+          <a href="/i-am-music-font">The story</a>
+          <a href="/i-am-music-font-generator">Guide</a>
+        </nav>
+          <a className="top-cta" href="#generator">Make yours <Icon name="arrow" /></a>
+      </header>
+
+      <section className="hero" id="top">
+        <div className="hero-copy">
+          <p className="eyebrow"><span className="pulse-dot" /> Type experiment 001 / 2026</p>
+          <h1>I AM MUSIC Font<br /><em>Generator.</em></h1>
+          <p className="hero-intro">Create <strong>I AM MUSIC font-style text</strong> with layered typography, adjustable spacing, stretch and color controls. Download your design as a PNG or SVG with no sign-up.</p>
+          <a className="text-link" href="#generator">Start composing <Icon name="arrow" /></a>
+        </div>
+        <div className="hero-art" aria-label="A preview of the I AM MUSIC layered text style" role="img">
+          <div className="art-label">VOL. 001<br /><span>TEXT / SOUND / FORM</span></div>
+          <div className="hero-type hero-type-back">I AM<br />MUSIC</div>
+          <div className="hero-type hero-type-front">I AM<br />MUSIC</div>
+          <div className="art-stamp">NOT<br />OFFICIAL</div>
+          <div className="art-foot">A study in overlap<br />and controlled distortion</div>
+        </div>
+      </section>
+
+      <Suspense fallback={null}>
+        <GeneratorIsland />
+      </Suspense>
+
+      <StaticSections />
+    </main>
   );
 }
 
-function HomeContent() {
+function GeneratorIsland() {
   const searchParams = useSearchParams();
   const initialText = (searchParams.get("text") ?? "").trim().toUpperCase().slice(0, 32) || "I AM MUSIC";
   const [text, setText] = useState(initialText);
@@ -143,44 +180,12 @@ function HomeContent() {
   }
 
   return (
-    <main className="site-shell">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }} />
-      <div className="grain" aria-hidden="true" />
-      <header className="topbar">
-        <a className="brand" href="#top" aria-label="I Am Music Font home">
-          <span className="brand-mark">IAM</span>
-          <span className="brand-name">I AM MUSIC FONT</span>
-        </a>
-        <nav className="nav-links" aria-label="Primary navigation">
-          <a href="#generator">Generator</a>
-          <a href="/i-am-music-font">The story</a>
-          <a href="/i-am-music-font-generator">Guide</a>
-        </nav>
-          <a className="top-cta" href="#generator">Make yours <Icon name="arrow" /></a>
-      </header>
-
-      <section className="hero" id="top">
-        <div className="hero-copy">
-          <p className="eyebrow"><span className="pulse-dot" /> Type experiment 001 / 2026</p>
-          <h1>I AM MUSIC Font<br /><em>Generator.</em></h1>
-          <p className="hero-intro">Create <strong>I AM MUSIC font-style text</strong> with layered typography, adjustable spacing, stretch and color controls. Download your design as a PNG or SVG with no sign-up.</p>
-          <a className="text-link" href="#generator">Start composing <Icon name="arrow" /></a>
-        </div>
-        <div className="hero-art" aria-label="A preview of the I AM MUSIC layered text style" role="img">
-          <div className="art-label">VOL. 001<br /><span>TEXT / SOUND / FORM</span></div>
-          <div className="hero-type hero-type-back">I AM<br />MUSIC</div>
-          <div className="hero-type hero-type-front">I AM<br />MUSIC</div>
-          <div className="art-stamp">NOT<br />OFFICIAL</div>
-          <div className="art-foot">A study in overlap<br />and controlled distortion</div>
-        </div>
-      </section>
-
-      <section className="generator-section" id="generator">
-        <div className="section-heading">
-          <div><p className="eyebrow">01 / Generator</p><h2>I AM MUSIC Font<br /><em>Generator.</em></h2></div>
-          <p className="section-note">Two layers. One phrase.<br />Zero sign-up.</p>
-        </div>
-        <div className="generator-grid">
+    <section className="generator-section" id="generator">
+      <div className="section-heading">
+        <div><p className="eyebrow">01 / Generator</p><h2>I AM MUSIC Font<br /><em>Generator.</em></h2></div>
+        <p className="section-note">Two layers. One phrase.<br />Zero sign-up.</p>
+      </div>
+      <div className="generator-grid">
           <div className="preview-wrap">
             <div className="preview-meta"><span>LIVE PREVIEW</span><span>1200 × 800</span></div>
             <div className="preview-card" style={{ backgroundColor: palette.background }}>
@@ -202,8 +207,13 @@ function HomeContent() {
             <button className="random-button" onClick={randomize}><Icon name="shuffle" /> Give me a phrase</button>
           </aside>
         </div>
-      </section>
+    </section>
+  );
+}
 
+function StaticSections() {
+  return (
+    <>
       <section className="ticker" aria-label="Site features"><div>FREE TO USE</div><div>NO SIGN-UP</div><div>BUILT FOR COVERS</div><div>EXPORT YOUR TYPE</div><div>FREE TO USE</div></section>
 
       <section className="story-section" id="about">
@@ -216,7 +226,8 @@ function HomeContent() {
 
       <section className="faq-section"><p className="eyebrow">I AM MUSIC Font FAQ</p><div className="faq-list">{faqs.map((faq, index) => <details key={faq.question} open={index === 0}><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}</div></section>
 
-      <footer className="footer"><div className="footer-brand">I AM MUSIC<br /><em>FONT</em></div><div className="footer-copy"><p>An independent type experiment for people making things.</p><p className="fine-print">Not affiliated with Playboi Carti, AWGE or Interscope Records.</p></div><div className="footer-links"><a href="#top">Back to top ↑</a><a href="#generator">Open generator ↗</a></div></footer>
-    </main>
+      <footer className="footer"><div className="footer-brand">I AM MUSIC<br /><em>FONT</em></div><div className="footer-copy"><p>An independent type experiment for people making things.</p><p className="fine-print">Not affiliated with Playboi Carti, AWGE or Interscope Records.</p></div><div className="footer-links"><a href="#top">Back to top ↑</a><a href="#generator">Open generator ↗</a><a href="/privacy">Privacy</a></div></footer>
+      <div className="ad-slot" aria-hidden="true"></div>
+    </>
   );
 }

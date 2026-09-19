@@ -39,6 +39,7 @@ export default function IAmMusicFontPage() {
         <section className="article-faq"><h2>Frequently asked questions</h2><details open><summary>Is this an official Playboi Carti font?</summary><p>No. This is an independent recreation tool and is not affiliated with Playboi Carti, AWGE or Interscope Records.</p></details><details><summary>Can I download the exact original font?</summary><p>The original lettering may include custom or modified forms. We recommend describing recreations as inspired or similar unless a verified source states otherwise.</p></details><details><summary>Can I use the result commercially?</summary><p>Check the license of every font or asset used in your final composition. The generator does not replace a font license.</p></details></section>
       </article>
       <footer className="content-footer"><Link href="/">← Back home</Link><Link href="/make/no-signal">Try a phrase page →</Link><Link href="/i-am-music-font-generator">Generator guide →</Link><Link href="/album-cover-text-style">Copy-paste guide →</Link></footer>
+      <div className="ad-slot" aria-hidden="true"></div>
     </main>
   );
 }

@@ -117,3 +117,14 @@ input[type=range] { accent-color: var(--black); margin-top: 18px; width: 100%; }
 .content-footer { border-top: 1px solid #aaa092; display: flex; font-size: 10px; justify-content: space-between; margin: 0 auto; max-width: 920px; padding: 25px 32px 55px; text-transform: uppercase; }
 .content-footer a:hover { color: #e34b32; }
 @media (max-width: 800px) { .nav-links { display: none; }.topbar { padding: 0 22px; }.hero { display: block; padding: 70px 22px 80px; }.hero-copy { margin-bottom: 70px; }.hero-art { min-height: 450px; }.generator-section, .guide-section, .faq-section { padding: 75px 22px; }.section-heading { align-items: start; display: block; }.section-note { margin-top: 25px; text-align: left; }.generator-grid { display: block; }.controls { margin-top: 45px; }.preview-card { min-height: 275px; }.preview-actions { flex-wrap: wrap; }.story-section { display: block; padding: 90px 22px; }.story-number { font-size: 100px; margin-bottom: 50px; }.story-quote { font-size: 70px; margin-top: 65px; }.guide-grid { display: block; }.guide-grid article { margin-bottom: 42px; }.faq-list { margin-left: 0; }.footer { display: block; padding: 50px 22px; }.footer-copy { margin: 35px 0; }.footer-links { align-items: start; justify-self: auto; }.content-header { padding: 0 22px; }.content-header .brand-name { display: none; }.article-shell { padding: 75px 22px 90px; }.article-shell h1 { font-size: clamp(60px, 17vw, 100px); }.article-lede { font-size: 24px; }.article-rule { margin: 55px 0; }.article-shell section { margin-bottom: 65px; }.callout { padding: 28px; }.feature-list { display: block; }.feature-list > div { margin-bottom: 35px; }.content-footer { display: flex; flex-direction: column; gap: 18px; padding: 25px 22px 45px; } }
+
+/* Privacy page */
+.legal-page { max-width: 720px; margin: 0 auto; padding: 80px 22px 100px; }
+.legal-page h1 { font-size: clamp(40px, 8vw, 64px); letter-spacing: -.04em; margin: 0; }
+.legal-updated { color: #6f6a5e; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; margin: 10px 0 40px; }
+.legal-page h2 { font-size: 22px; margin: 40px 0 10px; }
+.legal-page p, .legal-page li { color: #3d3a33; font-size: 14px; line-height: 1.8; }
+.legal-page ul { padding-left: 22px; }
+.legal-page a { color: var(--black); text-decoration: underline; }
+.ad-slot { display: block; }
+.ad-slot:empty { display: none; }
