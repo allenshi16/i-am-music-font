@@ -1,233 +1,346 @@
-"use client";
+import type { Metadata } from "next";
+import Link from "next/link";
 
-import { Suspense, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-type Mode = "dark" | "paper" | "acid";
-
-const presets = [
-  { name: "NIGHT SHIFT", text: "NIGHT SHIFT", mode: "dark" as Mode },
-  { name: "AFTER HOURS", text: "AFTER HOURS", mode: "paper" as Mode },
-  { name: "NO SIGNAL", text: "NO SIGNAL", mode: "acid" as Mode },
-];
-
-const modes: Record<Mode, { label: string; background: string; foreground: string; ink: string }> = {
-  dark: { label: "Obsidian", background: "#0d0d0e", foreground: "#f0ece4", ink: "#f0ece4" },
-  paper: { label: "Parchment", background: "#e9e1d1", foreground: "#141414", ink: "#141414" },
-  acid: { label: "Acid", background: "#d8ff46", foreground: "#131313", ink: "#131313" },
+export const metadata: Metadata = {
+  title: "I Am Music Font: Free Online Generator",
+  description:
+    "I Am Music font — the layered double-layer text effect from the iconic album artwork. Create it free online, adjust spacing and color, export PNG or SVG.",
+  keywords: [
+    "i am music font",
+    "i am music text",
+    "i am music logo",
+    "i am music typography",
+    "double layer font effect",
+  ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "I Am Music Font: Free Online Generator",
+    description:
+      "The layered double-layer text effect from the iconic album artwork. Create it free, export PNG or SVG.",
+    type: "website",
+    siteName: "I Am Music Font",
+  },
 };
 
 const faqs = [
   {
-    question: "What is the I AM MUSIC font?",
-    answer: "It is a popular recreation of the layered typography associated with the I AM MUSIC album artwork. The original lettering may include custom or modified forms, so this tool creates an inspired effect rather than claiming to reproduce an official font.",
+    question: "What is the I Am Music font?",
+    answer:
+      "The I Am Music font refers to the layered typography style used on Playboi Carti's album artwork. It is not a single downloadable typeface — it is a visual effect built from two type layers: a heavy condensed sans-serif in the background and a narrow serif stretched and offset on top. The result is a vibrating, overlapping letterform that reads as one unified mark.",
   },
   {
-    question: "How do I create I AM MUSIC style text?",
-    answer: "Enter a short phrase, choose a palette, then adjust the background scale, letter spacing and front stretch until the two type layers overlap with the look you want.",
+    question: "What font files recreate the I Am Music look?",
+    answer:
+      "There is no confirmed official font file. Most recreations use a bold condensed face like Impact or Swiss 911 Condensed for the back layer, paired with a serif like Times New Roman or Georgia for the front layer. The front layer is stretched horizontally (around 1.1× to 1.3×), set at reduced opacity, and shifted slightly to create the overlapping effect. The exact combination depends on the recreation.",
   },
   {
-    question: "What font is used for the I AM MUSIC effect?",
-    answer: "There is no confirmed public specification for one official font file. Most recreations use a condensed bold layer combined with a stretched serif layer to create the effect.",
+    question: "How do I create I Am Music style text?",
+    answer:
+      "Enter a short phrase into the generator, choose a color palette (Obsidian, Parchment or Acid), then adjust the background scale, letter spacing and front stretch until the two layers overlap the way you want. Export a PNG for social sharing or an SVG for scalable design work. The entire process runs in your browser — no text is uploaded to any server.",
   },
   {
-    question: "Can I use the designs commercially?",
-    answer: "You can use the exported artwork according to the licenses of any fonts or assets you add. This generator itself is unofficial; always verify the license of individual typefaces before commercial use.",
+    question: "Is this the official Playboi Carti font?",
+    answer:
+      "No. This is an independent, unofficial recreation tool. It is not affiliated with Playboi Carti, AWGE or Interscope Records. The original lettering may include custom or modified forms that are not publicly available as a font file. This generator creates an inspired effect, not a verified reproduction.",
   },
   {
-    question: "What file format can I download?",
-    answer: "You can export a ready-to-share PNG or a scalable SVG. Both files are generated in your browser and no phrase is uploaded.",
+    question: "Can I use the generated designs commercially?",
+    answer:
+      "The generator itself is free to use and does not restrict how you use your exports. However, the final design may be subject to the licensing terms of the system fonts rendered in your browser (Impact, Georgia, etc.). For commercial work, verify the license of every typeface in your composition. The generator does not replace a font license.",
+  },
+  {
+    question: "What characters and languages are supported?",
+    answer:
+      "The generator renders any characters available in the system fonts used by your browser — this covers Latin characters (A–Z), numbers, and common punctuation. For best results, use uppercase Latin text with short phrases of 2–3 words. Extended character sets, CJK characters and emoji may not render correctly in the layered effect.",
+  },
+  {
+    question: "Is my text uploaded to a server?",
+    answer:
+      "No. Everything — the live preview, the PNG export and the SVG export — is generated entirely in your browser using JavaScript and the Canvas API. Your phrase never leaves your device. This is a deliberate design choice: it means the tool works offline after the page loads, and there is no privacy concern around the text you type.",
+  },
+  {
+    question: "What is the difference between PNG and SVG export?",
+    answer:
+      "PNG is a raster image at 1200×800 pixels — ideal for social media posts, profile images and quick sharing. SVG is a scalable vector file — the text stays sharp at any size, making it the right choice for posters, album covers and print layouts. Both are generated locally in your browser.",
   },
 ];
 
-function slugify(value: string) {
-  return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "your-text";
-}
+const faqStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.question,
+    acceptedAnswer: { "@type": "Answer", text: f.answer },
+  })),
+};
 
-function escapeXml(value: string) {
-  return value.replace(/[<>&'\"]/g, (character) => ({
-    "<": "&lt;",
-    ">": "&gt;",
-    "&": "&amp;",
-    "'": "&apos;",
-    '"': "&quot;",
-  })[character] ?? character);
-}
-
-function Icon({ name }: { name: "arrow" | "download" | "shuffle" }) {
-  if (name === "download") return <span aria-hidden="true">↓</span>;
-  if (name === "shuffle") return <span aria-hidden="true">↝</span>;
-  return <span aria-hidden="true">↗</span>;
-}
-
-// The generator itself needs searchParams (client-only), but the SEO content
-// (hero copy, FAQ, footer, ad container) must be in the static shell — so only
-// the interactive island is wrapped in Suspense with a client-side bail-out.
 export default function HomePage() {
   return (
     <main className="site-shell">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }} />
       <div className="grain" aria-hidden="true" />
+
+      {/* ---- Top bar ---- */}
       <header className="topbar">
         <a className="brand" href="#top" aria-label="I Am Music Font home">
           <span className="brand-mark">IAM</span>
           <span className="brand-name">I AM MUSIC FONT</span>
         </a>
         <nav className="nav-links" aria-label="Primary navigation">
-          <a href="#generator">Generator</a>
-          <a href="/i-am-music-font">The story</a>
-          <a href="/i-am-music-font-generator">Guide</a>
+          <a href="/i-am-music-font-generator">Generator</a>
+          <a href="#how-to">How to</a>
+          <a href="#faq">FAQ</a>
         </nav>
-          <a className="top-cta" href="#generator">Make yours <Icon name="arrow" /></a>
+        <a className="top-cta" href="/i-am-music-font-generator">
+          Open generator <span aria-hidden="true">↗</span>
+        </a>
       </header>
 
+      {/* ---- Hero ---- */}
       <section className="hero" id="top">
         <div className="hero-copy">
-          <p className="eyebrow"><span className="pulse-dot" /> Type experiment 001 / 2026</p>
-          <h1>I AM MUSIC Font<br /><em>Generator.</em></h1>
-          <p className="hero-intro">Create <strong>I AM MUSIC font-style text</strong> with layered typography, adjustable spacing, stretch and color controls. Download your design as a PNG or SVG with no sign-up.</p>
-          <a className="text-link" href="#generator">Start composing <Icon name="arrow" /></a>
+          <p className="eyebrow">
+            <span className="pulse-dot" /> Type experiment 001 / 2026
+          </p>
+          <h1>
+            I Am Music<br />
+            <em>Font.</em>
+          </h1>
+          <p className="hero-intro">
+            The <strong>I Am Music font</strong> look is one of the most recognizable pieces of album typography in recent years — a heavy condensed layer underneath, a stretched serif on top, and just enough overlap to make the letters vibrate. Create your own version with the free generator below.
+          </p>
+          <a className="text-link" href="/i-am-music-font-generator">
+            Open the generator <span aria-hidden="true">↗</span>
+          </a>
         </div>
         <div className="hero-art" aria-label="A preview of the I AM MUSIC layered text style" role="img">
-          <div className="art-label">VOL. 001<br /><span>TEXT / SOUND / FORM</span></div>
+          <div className="art-label">
+            VOL. 001<br />
+            <span>TEXT / SOUND / FORM</span>
+          </div>
           <div className="hero-type hero-type-back">I AM<br />MUSIC</div>
           <div className="hero-type hero-type-front">I AM<br />MUSIC</div>
-          <div className="art-stamp">NOT<br />OFFICIAL</div>
-          <div className="art-foot">A study in overlap<br />and controlled distortion</div>
-        </div>
-      </section>
-
-      <Suspense fallback={null}>
-        <GeneratorIsland />
-      </Suspense>
-
-      <StaticSections />
-    </main>
-  );
-}
-
-function GeneratorIsland() {
-  const searchParams = useSearchParams();
-  const initialText = (searchParams.get("text") ?? "").trim().toUpperCase().slice(0, 32) || "I AM MUSIC";
-  const [text, setText] = useState(initialText);
-  const [mode, setMode] = useState<Mode>("dark");
-  const [size, setSize] = useState(86);
-  const [tracking, setTracking] = useState(1);
-  const [stretch, setStretch] = useState(1.08);
-  const [saved, setSaved] = useState(false);
-  const palette = modes[mode];
-
-  const displayText = text.trim() || "YOUR TEXT";
-  const titleSlug = useMemo(() => slugify(displayText), [displayText]);
-  const faqStructuredData = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: { "@type": "Answer", text: faq.answer },
-    })),
-  };
-
-  function applyPreset(preset: (typeof presets)[number]) {
-    setText(preset.text);
-    setMode(preset.mode);
-    setSaved(false);
-  }
-
-  function randomize() {
-    const phrases = ["NO SIGNAL", "FUTURE CLASSIC", "LOUD SILENCE", "MIDNIGHT FM", "STATIC DREAMS"];
-    setText(phrases[Math.floor(Math.random() * phrases.length)]);
-    setSaved(false);
-  }
-
-  function createExportSvg() {
-    const safeText = escapeXml(displayText);
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><rect width="1200" height="800" fill="${palette.background}"/><text x="600" y="430" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="${size * 3.1}px" letter-spacing="${tracking * 2}px" fill="${palette.foreground}" opacity=".95">${safeText}</text><text x="600" y="430" text-anchor="middle" font-family="Times New Roman, serif" font-size="${size * 2.8}px" letter-spacing="${tracking * 1.5}px" fill="${palette.ink}" opacity=".38" transform="translate(0 0) scale(${stretch} 1)">${safeText}</text></svg>`;
-  }
-
-  function downloadBlob(blob: Blob, extension: string) {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${titleSlug}-i-am-music.${extension}`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
-  }
-
-  function downloadSvg() {
-    const svg = createExportSvg();
-    downloadBlob(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }), "svg");
-  }
-
-  function downloadPng() {
-    const svg = createExportSvg();
-    const image = new Image();
-    image.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = 1200;
-      canvas.height = 800;
-      const context = canvas.getContext("2d");
-      if (!context) return;
-      context.drawImage(image, 0, 0);
-      canvas.toBlob((blob) => {
-        if (blob) downloadBlob(blob, "png");
-      }, "image/png");
-      URL.revokeObjectURL(image.src);
-    };
-    image.src = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
-  }
-
-  return (
-    <section className="generator-section" id="generator">
-      <div className="section-heading">
-        <div><p className="eyebrow">01 / Generator</p><h2>I AM MUSIC Font<br /><em>Generator.</em></h2></div>
-        <p className="section-note">Two layers. One phrase.<br />Zero sign-up.</p>
-      </div>
-      <div className="generator-grid">
-          <div className="preview-wrap">
-            <div className="preview-meta"><span>LIVE PREVIEW</span><span>1200 × 800</span></div>
-            <div className="preview-card" style={{ backgroundColor: palette.background }}>
-              <div className="preview-index">IAM / {titleSlug}</div>
-              <svg className="preview-svg" viewBox="0 0 900 560" role="img" aria-label={`${displayText} layered text preview`}>
-                <text x="450" y="310" textAnchor="middle" className="svg-back" style={{ fontSize: `${size / 1.8}px`, letterSpacing: `${tracking}px`, fill: palette.foreground }}>{displayText}</text>
-                <text x="450" y="310" textAnchor="middle" className="svg-front" style={{ fontSize: `${size / 2}px`, letterSpacing: `${tracking / 2}px`, fill: palette.ink, transform: `translate(450px, 310px) scale(${stretch}, 1) translate(-450px, -310px)` }}>{displayText}</text>
-              </svg>
-              <div className="preview-footer"><span>DOUBLE LAYER STUDY</span><span>GENERATED LIVE</span></div>
-            </div>
-          <div className="preview-actions"><button className="button button-primary" onClick={downloadPng}><Icon name="download" /> Download PNG</button><button className="button button-secondary" onClick={downloadSvg}>SVG <Icon name="arrow" /></button><button className={`button button-ghost ${saved ? "is-saved" : ""}`} onClick={() => setSaved(!saved)}>{saved ? "Saved to this session" : "Save composition"}</button></div>
+          <div className="art-stamp">
+            NOT<br />OFFICIAL
           </div>
-          <aside className="controls" aria-label="Generator controls">
-            <div className="control-block control-text"><label htmlFor="phrase">Your phrase</label><textarea id="phrase" value={text} onChange={(event) => setText(event.target.value.slice(0, 32))} rows={2} /><div className="input-meta"><span>UPPERCASE LOOKS BEST</span><span>{text.length}/32</span></div></div>
-            <div className="control-block"><div className="control-title"><span>Palette</span><span className="control-value">{palette.label}</span></div><div className="swatches">{(Object.keys(modes) as Mode[]).map((key) => <button key={key} className={`swatch swatch-${key} ${mode === key ? "selected" : ""}`} aria-label={`Use ${modes[key].label} palette`} onClick={() => setMode(key)} />)}</div></div>
-            <div className="control-block"><div className="control-title"><span>Background scale</span><span className="control-value">{size}px</span></div><input type="range" min="54" max="120" value={size} onChange={(event) => setSize(Number(event.target.value))} /></div>
-            <div className="control-block"><div className="control-title"><span>Letter spacing</span><span className="control-value">{tracking}px</span></div><input type="range" min="-2" max="8" step="0.5" value={tracking} onChange={(event) => setTracking(Number(event.target.value))} /></div>
-            <div className="control-block"><div className="control-title"><span>Front stretch</span><span className="control-value">{stretch.toFixed(2)}×</span></div><input type="range" min="0.9" max="1.35" step="0.01" value={stretch} onChange={(event) => setStretch(Number(event.target.value))} /></div>
-            <button className="random-button" onClick={randomize}><Icon name="shuffle" /> Give me a phrase</button>
-          </aside>
+          <div className="art-foot">
+            A study in overlap<br />
+            and controlled distortion
+          </div>
         </div>
-    </section>
-  );
-}
-
-function StaticSections() {
-  return (
-    <>
-      <section className="ticker" aria-label="Site features"><div>FREE TO USE</div><div>NO SIGN-UP</div><div>BUILT FOR COVERS</div><div>EXPORT YOUR TYPE</div><div>FREE TO USE</div></section>
-
-      <section className="story-section" id="about">
-        <div className="story-number">02</div>
-        <div className="story-copy"><p className="eyebrow">About the effect</p><h2>What Is the I AM MUSIC<br /><em>Font Effect?</em></h2><p>The I AM MUSIC look is best understood as a constructed effect: a heavy condensed layer underneath, a narrow serif layer stretched over the top, and just enough misalignment to make the letters vibrate.</p><p>We built this tool to make that visual language easy to explore without pretending there is one official typeface behind it.</p><a className="text-link" href="/i-am-music-font">Read the full story <Icon name="arrow" /></a></div>
-        <div className="story-quote">“<br /><span>type should<br />feel loud</span><br />”</div>
       </section>
 
-      <section className="guide-section" id="guide"><div className="section-heading"><div><p className="eyebrow">03 / Quick guide</p><h2>Three moves<br /><em>to start.</em></h2></div></div><div className="guide-grid"><article><span>01</span><h3>Write something real</h3><p>Use a title, alias, hook or phrase that already has a pulse. Short words create the strongest silhouette.</p></article><article><span>02</span><h3>Break the balance</h3><p>Push the front stretch and tracking until the two layers stop behaving like a normal type pairing.</p></article><article><span>03</span><h3>Save the signal</h3><p>Export your SVG, drop it into a cover, poster or profile image, and keep the experiment moving.</p></article></div><a className="text-link guide-link" href="/i-am-music-font-generator">Read the complete generator guide <Icon name="arrow" /></a></section>
+      {/* ---- CTA band ---- */}
+      <section className="cta-band">
+        <div>
+          <h2>Make your own<br /><em>I Am Music text.</em></h2>
+          <p>Type a phrase, pick a palette, export PNG or SVG. No sign-up, no upload.</p>
+        </div>
+        <a className="cta-band-button" href="/i-am-music-font-generator">Open the free generator ↗</a>
+      </section>
 
-      <section className="faq-section"><p className="eyebrow">I AM MUSIC Font FAQ</p><div className="faq-list">{faqs.map((faq, index) => <details key={faq.question} open={index === 0}><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}</div></section>
+      {/* ---- Features ---- */}
+      <section className="features-section" id="features">
+        <p className="eyebrow">What you get</p>
+        <h2>Free. Local. No sign-up.</h2>
+        <div className="features-grid">
+          <div>
+            <span>01</span>
+            <h3>Double-layer effect</h3>
+            <p>A bold condensed background and a stretched serif foreground — the two layers that define the I Am Music look. Adjust the overlap, stretch and spacing until it feels right.</p>
+          </div>
+          <div>
+            <span>02</span>
+            <h3>Three palettes</h3>
+            <p>Obsidian black, warm parchment or acid green. Each palette changes the mood of the composition completely — from dark and cinematic to bright and confrontational.</p>
+          </div>
+          <div>
+            <span>03</span>
+            <h3>100% local export</h3>
+            <p>Your phrase is never uploaded. PNG and SVG files are generated in your browser using the Canvas API. The tool works offline after the page loads and there is zero privacy risk.</p>
+          </div>
+        </div>
+      </section>
 
-      <footer className="footer"><div className="footer-brand">I AM MUSIC<br /><em>FONT</em></div><div className="footer-copy"><p>An independent type experiment for people making things.</p><p className="fine-print">Not affiliated with Playboi Carti, AWGE or Interscope Records.</p></div><div className="footer-links"><a href="#top">Back to top ↑</a><a href="#generator">Open generator ↗</a><a href="/privacy">Privacy</a></div></footer>
+      {/* ---- How to ---- */}
+      <section className="howto-section" id="how-to">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Step by step</p>
+            <h2>How to create<br /><em>I Am Music text.</em></h2>
+          </div>
+        </div>
+        <div className="howto-grid">
+          <article>
+            <span>01</span>
+            <h3>Choose a short phrase</h3>
+            <p>Two or three words work best. The I Am Music effect relies on a strong, compact silhouette, so shorter phrases create more impact. Try an artist name, album title, or a phrase that carries weight — "NIGHT SHIFT", "NO SIGNAL", "LOUD SILENCE".</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Set the back layer</h3>
+            <p>The background layer is a heavy condensed sans-serif — think Impact or a Swiss 911-style face. Push the background scale up until the letters fill the frame. This layer provides the silhouette and the volume of the composition.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Stretch the front layer</h3>
+            <p>The foreground is a narrow serif (Georgia or Times New Roman) stretched horizontally and set at reduced opacity. Push the front stretch to around 1.1×–1.3× and adjust the letter spacing until the two layers overlap with the vibrating effect the style is known for.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Pick a palette and export</h3>
+            <p>Choose Obsidian for a dark, cinematic feel, Parchment for a warmer vintage look, or Acid for maximum contrast. Then export a PNG for social media or an SVG for print and design work. Both are generated locally in your browser.</p>
+          </article>
+        </div>
+        <a className="text-link" href="/i-am-music-font-generator">Try it in the generator <span aria-hidden="true">↗</span></a>
+      </section>
+
+      {/* ---- Double-layer principle ---- */}
+      <section className="principle-section" id="the-effect">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">The visual principle</p>
+            <h2>Two layers.<br /><em>One phrase.</em></h2>
+          </div>
+        </div>
+        <div className="principle-content">
+          <p>The I Am Music look is not a single font — it is a constructed effect. Understanding how the two layers interact is the key to recreating it with any phrase, not just the original album text.</p>
+          <p><strong>The back layer</strong> is a bold condensed sans-serif. It provides the structural foundation: the weight, the silhouette, the overall volume of the letterforms. This layer is rendered at full opacity and anchors the composition. Think of it as the "body" of the text.</p>
+          <p><strong>The front layer</strong> is a narrow serif — typically Georgia or Times New Roman in italic — that is stretched horizontally (usually between 1.1× and 1.35×). It is rendered at roughly 40% opacity and positioned directly on top of the back layer. The stretch makes the serif letters wider than their natural proportions, and the reduced opacity allows the back layer to show through, creating the signature vibrating overlap.</p>
+          <p>The magic is in the misalignment. Because the two layers use different typefaces with different proportions, the letters don't line up perfectly. The serif strokes extend beyond the sans-serif edges, the curved bowls overlap differently, and the result is a sense of controlled distortion — the text looks like it's vibrating or shimmering. This is what makes the effect immediately recognizable.</p>
+          <p>The best results come from short phrases in uppercase. Two or three words give each letter enough room for the overlap to be visible without becoming muddy. Longer phrases tend to lose the effect because the letters crowd together and the layer distinction breaks down.</p>
+        </div>
+      </section>
+
+      {/* ---- Palette comparison ---- */}
+      <section className="palette-section">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Color options</p>
+            <h2>Three palettes,<br /><em>three moods.</em></h2>
+          </div>
+        </div>
+        <div className="palette-grid">
+          <div className="palette-card" style={{ backgroundColor: "#0d0d0e", color: "#f0ece4" }}>
+            <h3>Obsidian</h3>
+            <p>Dark background with light text. The most cinematic palette — it reads as moody, authoritative and close to the original album artwork's energy. Best for dramatic covers, dark-mode profiles and poster work.</p>
+            <span className="palette-tag">DARK / CINEMATIC</span>
+          </div>
+          <div className="palette-card" style={{ backgroundColor: "#e9e1d1", color: "#141414" }}>
+            <h3>Parchment</h3>
+            <p>Warm paper background with dark text. Softens the effect and gives it a vintage, printed-matter quality. Works well for editorial layouts, zines and anything that should feel tactile rather than digital.</p>
+            <span className="palette-tag">WARM / VINTAGE</span>
+          </div>
+          <div className="palette-card" style={{ backgroundColor: "#d8ff46", color: "#131313" }}>
+            <h3>Acid</h3>
+            <p>High-contrast neon green with dark text. The most attention-grabbing palette — it pushes the effect into confrontational, internet-native territory. Ideal for social posts, teasers and anything that needs to stop the scroll.</p>
+            <span className="palette-tag">NEON / CONFRONTATIONAL</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- PNG vs SVG ---- */}
+      <section className="format-section">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Export formats</p>
+            <h2>PNG vs SVG:<br /><em>which to use.</em></h2>
+          </div>
+        </div>
+        <div className="format-grid">
+          <div>
+            <h3>PNG</h3>
+            <p>A raster image at 1200×800 pixels. Ready to upload to social media, use as a profile image, or embed in a document. PNG is the fastest option for sharing — the file is self-contained and every platform supports it. The trade-off is that it has a fixed resolution: if you scale it up beyond 1200×800, the text will start to look soft.</p>
+            <p><strong>Use PNG for:</strong> social media posts, profile headers, messaging, quick mockups, email signatures.</p>
+          </div>
+          <div>
+            <h3>SVG</h3>
+            <p>A scalable vector file. The text is defined as mathematical paths rather than pixels, which means it stays perfectly sharp at any size — from a small icon to a full-size poster. SVG is the right choice when you need to scale the design or edit it further in a vector editor like Illustrator or Figma.</p>
+            <p><strong>Use SVG for:</strong> album covers, posters, print layouts, merchandise, any design that needs to scale.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- Unofficial notice ---- */}
+      <section className="callout">
+        <span>IMPORTANT</span>
+        <strong>This is an unofficial tool.</strong>
+        <p>The I Am Music font generator is an independent project and is not affiliated with Playboi Carti, AWGE or Interscope Records. The original lettering may include custom or modified forms that are not available as a public font file. This tool creates an inspired effect — describe your results as "inspired by" or "similar to" rather than claiming an exact match.</p>
+      </section>
+
+      {/* ---- Supported text and characters ---- */}
+      <section className="principle-section">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Technical details</p>
+            <h2>What text works<br /><em>best?</em></h2>
+          </div>
+        </div>
+        <div className="principle-content">
+          <p>The generator renders any characters that are available in the system fonts on your device. This covers the full Latin alphabet (A–Z), numbers (0–9), and common punctuation marks. The text is automatically converted to uppercase, which is where the effect looks strongest — the condensed letterforms were designed for all-caps settings.</p>
+          <p><strong>For the best results, use 2–3 short words.</strong> The double-layer effect needs each letter to have room to breathe. When the phrase is too long, the condensed back layer and the stretched serif front layer crowd together, and the overlap that gives the style its character becomes a blur. Phrases like "NO SIGNAL", "NIGHT SHIFT" or "AFTER HOURS" hit the sweet spot: short enough for the layers to separate, long enough to feel like a statement.</p>
+          <p>Extended Latin characters (accents, umlauts) will generally render, but may not match the condensed proportions of the back layer perfectly. CJK characters (Chinese, Japanese, Korean), Arabic, Cyrillic and emoji are not supported by the Impact/Georgia font stack and will not display correctly in the layered effect. If you need to work with non-Latin text, consider using the SVG export and editing the result in a vector editor where you can substitute appropriate typefaces.</p>
+        </div>
+      </section>
+
+      {/* ---- Common uses ---- */}
+      <section className="format-section">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Use cases</p>
+            <h2>Where people<br /><em>use this.</em></h2>
+          </div>
+        </div>
+        <div className="format-grid">
+          <div>
+            <h3>Cover artwork</h3>
+            <p>The most common use. Export an SVG for a scalable, print-ready file that stays sharp at album cover dimensions (3000×3000px for most distributors). The layered effect reads well at this size because the overlap between the two type layers is visible without becoming muddy.</p>
+            <p><strong>Also works for:</strong> podcast covers, playlist artwork, mixtape sleeves, zine covers.</p>
+          </div>
+          <div>
+            <h3>Social and profile images</h3>
+            <p>Export a PNG for immediate use as a profile header, post graphic or story background. The 1200×800 export fits standard social media aspect ratios. The acid palette is particularly effective for stopping the scroll on visually busy feeds.</p>
+            <p><strong>Also works for:</strong> YouTube thumbnails, banner images, event teasers, link-in-bio graphics.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- FAQ ---- */}
+      <section className="faq-section" id="faq">
+        <p className="eyebrow">Frequently asked questions</p>
+        <div className="faq-list">
+          {faqs.map((faq, index) => (
+            <details key={faq.question} open={index === 0}>
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      {/* ---- Footer ---- */}
+      <footer className="footer">
+        <div className="footer-brand">
+          I AM MUSIC<br />
+          <em>FONT</em>
+        </div>
+        <div className="footer-copy">
+          <p>An independent type experiment for people making things.</p>
+          <p className="fine-print">
+            Not affiliated with Playboi Carti, AWGE or Interscope Records.
+          </p>
+        </div>
+        <div className="footer-links">
+          <a href="/i-am-music-font-generator">Open generator ↗</a>
+          <a href="/make/no-signal">Example: NO SIGNAL</a>
+          <a href="/make/after-hours">Example: AFTER HOURS</a>
+          <a href="/privacy">Privacy</a>
+        </div>
+      </footer>
       <div className="ad-slot" aria-hidden="true"></div>
-    </>
+    </main>
   );
 }

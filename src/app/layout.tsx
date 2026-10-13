@@ -11,7 +11,7 @@ const gaValid = /^G-[A-Z0-9]{6,}$/.test(gaId);
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "I Am Music Font Generator — Create the Double-Layer Text Effect",
+    default: "I Am Music Font: Free Online Generator",
     template: "%s | I Am Music Font",
   },
   description:
@@ -24,10 +24,13 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/" },
   openGraph: {
-    title: "I Am Music Font Generator",
-    description: "Build your own layered music-cover typography in seconds.",
+    title: "I Am Music Font",
+    description: "Free layered text generator — create I AM MUSIC style typography online.",
     type: "website",
     siteName: "I Am Music Font",
+  },
+  icons: {
+    icon: "/favicon.svg",
   },
   robots: { index: true, follow: true },
   other: adsenseClient ? { "adsense-client": adsenseClient } : {},
