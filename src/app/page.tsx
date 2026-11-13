@@ -336,7 +336,7 @@ export default function HomePage() {
         <div className="footer-links">
           <a href="/i-am-music-font-generator">Open generator ↗</a>
           <a href="/make/no-signal">Example: NO SIGNAL</a>
-          <a href="/make/after-hours">Example: AFTER HOURS</a>
+          <a href="/album-cover-text-style">Album cover text guide</a>
           <a href="/privacy">Privacy</a>
         </div>
       </footer>

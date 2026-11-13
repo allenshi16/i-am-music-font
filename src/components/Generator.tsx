@@ -18,7 +18,20 @@ export interface GeneratorProps {
   initialPalette?: Mode;
   /** Compact layout for embedding in phrase pages. */
   compact?: boolean;
+  /** Render the preset showcase below the tool (generator page only). */
+  showPresets?: boolean;
 }
+
+const PRESETS: { text: string; mode: Mode; size: number; tracking: number; stretch: number }[] = [
+  { text: "NO SIGNAL", mode: "acid", size: 90, tracking: 2, stretch: 1.15 },
+  { text: "AFTER HOURS", mode: "dark", size: 82, tracking: 1, stretch: 1.08 },
+  { text: "NIGHT SHIFT", mode: "dark", size: 86, tracking: 1.5, stretch: 1.1 },
+  { text: "FUTURE CLASSIC", mode: "paper", size: 78, tracking: 0.5, stretch: 1.2 },
+  { text: "LOUD SILENCE", mode: "dark", size: 84, tracking: 3, stretch: 1.05 },
+  { text: "MIDNIGHT FM", mode: "acid", size: 92, tracking: 1, stretch: 1.25 },
+  { text: "DEAD AIR", mode: "dark", size: 96, tracking: 4, stretch: 1.0 },
+  { text: "ON REPEAT", mode: "paper", size: 80, tracking: 0, stretch: 1.18 },
+];
 
 function slugify(value: string) {
   return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "your-text";
@@ -41,7 +54,7 @@ function Icon({ name }: { name: "arrow" | "download" | "shuffle" | "check" }) {
 /*  Core generator (needs Suspense because of useSearchParams)                */
 /* -------------------------------------------------------------------------- */
 
-function GeneratorCore({ initialText, initialPalette, compact = false }: GeneratorProps) {
+function GeneratorCore({ initialText, initialPalette, compact = false, showPresets = false }: GeneratorProps) {
   const searchParams = useSearchParams();
   const fromUrl = (searchParams.get("text") ?? "").trim().toUpperCase().slice(0, 32);
   const seed = initialText || fromUrl || "I AM MUSIC";
@@ -107,6 +120,15 @@ function GeneratorCore({ initialText, initialPalette, compact = false }: Generat
   function randomize() {
     const phrases = ["NO SIGNAL", "FUTURE CLASSIC", "LOUD SILENCE", "MIDNIGHT FM", "STATIC DREAMS", "AFTER HOURS", "NIGHT SHIFT", "DEAD AIR"];
     setText(phrases[Math.floor(Math.random() * phrases.length)]);
+  }
+
+  function applyPreset(preset: (typeof PRESETS)[number]) {
+    setText(preset.text);
+    setMode(preset.mode);
+    setSize(preset.size);
+    setTracking(preset.tracking);
+    setStretch(preset.stretch);
+    document.getElementById("generator")?.scrollIntoView({ behavior: "smooth" });
   }
 
   /* ---- render ---- */
@@ -208,6 +230,34 @@ function GeneratorCore({ initialText, initialPalette, compact = false }: Generat
           )}
         </aside>
       </div>
+
+      {showPresets && (
+        <div className="showcase-block">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Ready-made styles</p>
+              <h2>Start from a<br /><em>preset.</em></h2>
+            </div>
+            <p className="section-note">Click any style to load it<br />into the generator above.</p>
+          </div>
+          <div className="showcase-grid">
+            {PRESETS.map((preset) => {
+              const c = modes[preset.mode];
+              return (
+                <button key={preset.text} type="button" className="showcase-card" onClick={() => applyPreset(preset)}>
+                  <div className="showcase-preview" style={{ backgroundColor: c.background }}>
+                    <svg viewBox="0 0 900 560" aria-hidden="true">
+                      <text x="450" y="310" textAnchor="middle" style={{ fontFamily: "Impact, 'Arial Narrow', sans-serif", fontWeight: 700, fontSize: preset.size * 0.55, letterSpacing: preset.tracking, fill: c.foreground }}>{preset.text}</text>
+                      <text x="450" y="310" textAnchor="middle" style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", fontSize: preset.size * 0.5, letterSpacing: preset.tracking * 0.5, fill: c.ink, opacity: 0.42, transform: `translate(450px, 310px) scale(${preset.stretch}, 1) translate(-450px, -310px)` }}>{preset.text}</text>
+                    </svg>
+                  </div>
+                  <span className="showcase-label">{preset.text}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

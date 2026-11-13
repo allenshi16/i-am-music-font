@@ -58,7 +58,7 @@ export default function AlbumCoverTextStylePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <header className="content-header">
         <Link className="brand" href="/"><span className="brand-mark">IAM</span><span className="brand-name">I AM MUSIC FONT</span></Link>
-        <Link className="top-cta" href="/">Open generator ↗</Link>
+        <Link className="top-cta" href="/i-am-music-font-generator">Open generator ↗</Link>
       </header>
       <article className="article-shell">
         <p className="eyebrow">Typography field notes / 003</p>
@@ -70,10 +70,10 @@ export default function AlbumCoverTextStylePage() {
         <section><h2>Where each approach works</h2><ul className="step-list"><li><strong>Instagram and TikTok bios.</strong> Single-style bold via Unicode characters. Keep it short — long strings look noisy.</li><li><strong>YouTube thumbnails and cover art.</strong> Render the layered effect and export a PNG or SVG, then place it over artwork.</li><li><strong>Posters and merch.</strong> Use the SVG export so the lettering stays sharp at any print size.</li><li><strong>Chat apps and lyrics posts.</strong> Rendered images avoid missing-glyph boxes on phones that lack the characters.</li></ul></section>
         <section><h2>Font pairing that reads “album cover”</h2><p>Two families do most of the work. A heavy condensed sans-serif — think Impact or Swiss 911 style — gives the silhouette. A narrow serif such as a Times style, stretched vertically and offset a few points, becomes the front layer. Contrast matters more than the exact names: one loud, one refined.</p></section>
         <section><h2>Recreate it in one minute</h2><ol className="step-list"><li><strong>Type a short phrase</strong> in the generator — two or three words work best.</li><li><strong>Pick a two-tone palette</strong> so the front layer separates from the back.</li><li><strong>Push the stretch control</strong> until the serif layer nearly collides with the condensed layer.</li><li><strong>Export PNG for social</strong> or SVG for design work, and paste the image where you need it.</li></ol></section>
-        <section><h2>Want to try it?</h2><p>The generator runs entirely in your browser — no account, no watermark, and your phrase never leaves the page.</p><Link className="article-button" href="/#generator">Open the generator ↗</Link></section>
+        <section><h2>Want to try it?</h2><p>The generator runs entirely in your browser — no account, no watermark, and your phrase never leaves the page.</p><Link className="article-button" href="/i-am-music-font-generator">Open the generator ↗</Link></section>
         <section className="article-faq"><h2>Frequently asked questions</h2><details open><summary>Can I copy and paste album cover style text anywhere?</summary><p>The layered effect needs a graphic or a web page. For bios and captions, use single-style bold text via Unicode fonts, or paste a link to your rendered image.</p></details><details><summary>What fonts look like album cover lettering?</summary><p>A bold condensed sans-serif for the back layer paired with a stretched serif for the front layer recreates the classic look.</p></details><details><summary>Is the generator free?</summary><p>Yes — type your phrase, adjust the controls and download a PNG or SVG without signing up.</p></details></section>
       </article>
-      <footer className="content-footer"><Link href="/">← Back home</Link><Link href="/i-am-music-font">What font is used? →</Link></footer>
+      <footer className="content-footer"><Link href="/">← Back home</Link><Link href="/i-am-music-font-generator">Font generator →</Link></footer>
       <div className="ad-slot" aria-hidden="true"></div>
     </main>
   );

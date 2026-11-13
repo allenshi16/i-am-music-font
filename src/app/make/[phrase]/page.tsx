@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { phrases, getPhrase, type PhraseEntry } from "@/data/phrases";
+import { getPhrase, type PhraseEntry } from "@/data/phrases";
 import Generator from "@/components/Generator";
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return phrases.map((p) => ({ phrase: p.slug }));
+  return [{ phrase: "no-signal" }];
 }
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -66,15 +66,6 @@ export default async function PhrasePage({ params }: { params: Promise<{ phrase:
   const { phrase } = await params;
   const entry = getPhrase(phrase);
   if (!entry) return null;
-
-  /* Cross-links: pick 4 other phrases (2 before, 2 after in the list, wrapping). */
-  const idx = phrases.findIndex((p) => p.slug === entry.slug);
-  const crossLinks = [
-    phrases[(idx - 2 + phrases.length) % phrases.length],
-    phrases[(idx - 1 + phrases.length) % phrases.length],
-    phrases[(idx + 1) % phrases.length],
-    phrases[(idx + 2) % phrases.length],
-  ];
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -161,19 +152,6 @@ export default async function PhrasePage({ params }: { params: Promise<{ phrase:
         </section>
 
         <Faq entry={entry} />
-
-        {/* ---- Cross-links ---- */}
-        <section className="cross-links">
-          <h2>More phrases to try</h2>
-          <div className="cross-links-grid">
-            {crossLinks.map((p) => (
-              <Link key={p.slug} href={`/make/${p.slug}`} className="cross-link-card">
-                <span className="cross-link-phrase">&ldquo;{p.phrase}&rdquo;</span>
-                <span className="cross-link-vibe">{p.vibe}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
       </article>
       <footer className="content-footer">
         <Link href="/">← Back home</Link>

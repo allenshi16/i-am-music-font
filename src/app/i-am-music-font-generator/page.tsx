@@ -135,58 +135,7 @@ export default function GeneratorPage() {
 
       {/* ---- The generator ---- */}
       <section className="gen-tool-section" id="generator">
-        <Generator />
-      </section>
-
-      {/* ---- Showcase presets ---- */}
-      <section className="showcase-section">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">Ready-made styles</p>
-            <h2>Start from a<br /><em>preset.</em></h2>
-          </div>
-          <p className="section-note">Click any style to load it<br />into the generator above.</p>
-        </div>
-        <div className="showcase-grid">
-          {[
-            { text: "NO SIGNAL", mode: "acid", size: 90, tracking: 2, stretch: 1.15 },
-            { text: "AFTER HOURS", mode: "dark", size: 82, tracking: 1, stretch: 1.08 },
-            { text: "NIGHT SHIFT", mode: "dark", size: 86, tracking: 1.5, stretch: 1.1 },
-            { text: "FUTURE CLASSIC", mode: "paper", size: 78, tracking: 0.5, stretch: 1.2 },
-            { text: "LOUD SILENCE", mode: "dark", size: 84, tracking: 3, stretch: 1.05 },
-            { text: "MIDNIGHT FM", mode: "acid", size: 92, tracking: 1, stretch: 1.25 },
-            { text: "DEAD AIR", mode: "dark", size: 96, tracking: 4, stretch: 1.0 },
-            { text: "ON REPEAT", mode: "paper", size: 80, tracking: 0, stretch: 1.18 },
-          ].map((preset) => {
-            const colors: Record<string, { bg: string; fg: string; ink: string }> = {
-              dark: { bg: "#0d0d0e", fg: "#f0ece4", ink: "#f0ece4" },
-              paper: { bg: "#e9e1d1", fg: "#141414", ink: "#141414" },
-              acid: { bg: "#d8ff46", fg: "#131313", ink: "#131313" },
-            };
-            const c = colors[preset.mode];
-            return (
-              <a
-                key={preset.text}
-                className="showcase-card"
-                href={`?text=${encodeURIComponent(preset.text)}#generator`}
-              >
-                <div className="showcase-preview" style={{ backgroundColor: c.bg }}>
-                  <svg viewBox="0 0 900 560">
-                    <text
-                      x="450" y="310" textAnchor="middle"
-                      style={{ fontFamily: "Impact, 'Arial Narrow', sans-serif", fontWeight: 700, fontSize: preset.size * 0.55, letterSpacing: preset.tracking, fill: c.fg }}
-                    >{preset.text}</text>
-                    <text
-                      x="450" y="310" textAnchor="middle"
-                      style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontStyle: "italic", fontSize: preset.size * 0.5, letterSpacing: preset.tracking * 0.5, fill: c.ink, opacity: 0.42, transform: `translate(450px, 310px) scale(${preset.stretch}, 1) translate(-450px, -310px)` }}
-                    >{preset.text}</text>
-                  </svg>
-                </div>
-                <span className="showcase-label">{preset.text}</span>
-              </a>
-            );
-          })}
-        </div>
+        <Generator showPresets />
       </section>
 
       {/* ---- How to use ---- */}
@@ -259,7 +208,7 @@ export default function GeneratorPage() {
       <footer className="content-footer">
         <Link href="/">← Back home</Link>
         <Link href="/make/no-signal">NO SIGNAL →</Link>
-        <Link href="/make/after-hours">AFTER HOURS →</Link>
+        <Link href="/album-cover-text-style">Album cover guide →</Link>
         <Link href="/privacy">Privacy</Link>
       </footer>
       <div className="ad-slot" aria-hidden="true"></div>
